@@ -92,19 +92,16 @@ $(async function() {
     evt.preventDefault();
 
     let newStoryObj = {
-      author : $("#author").val(),
-      title : $("#title").val(),
-      url : $("#url").val(),
+      author: $("#author").val(),
+      title: $("#title").val(),
+      url: $("#url").val(),
     }
 
     // Perform the post and away for the returned story
     let response = await storyList.addStory(currentUser, newStoryObj);
 
-    // Create a Story object from the returned story
-    let returnStory = new Story(response.story);
-
     // HTML'ify the return story object
-    let htmlResponse = generateStoryHTML(returnStory);
+    let htmlResponse = generateStoryHTML(response);
 
     // Prepend to the story list:
     $allStoriesList.prepend(htmlResponse);

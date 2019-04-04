@@ -33,28 +33,22 @@ class StoryList {
      */
   
   async addStory(user, newStory) {
-    // TODO - Implement this functions!
-    // this function should return the newly created story so it can be used in the script.js file where it will be appended to the DOM
-
-
 
     // Note - payload works like this...didn't work with double quotes around everything!
     //        Also use pojo rather than a "Story" object!
     let payload = 
     {
-      token:`${user.loginToken}`,
-      story:
-      {
-        author:`${newStory.author}`,
-        title:`${newStory.title}`, 
-        url:`${newStory.url}`
-      }
+      token: user.loginToken,
+      story: newStory
     };
 
     // Do post request to api to write new story:
     const response = await $.post(`${BASE_URL}/stories`, payload);
 
-    return response
+    // Create a Story object from the returned story
+    let returnStory = new Story(response.story);
+
+    return returnStory;
   }
 }
 
