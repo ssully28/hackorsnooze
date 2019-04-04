@@ -9,6 +9,7 @@ $(async function() {
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
   const $addNewStory = $("#addNewStory");
+  const $showFavorites = $('#showFavorites');
 
   // global storyList variable
   let storyList = null;
@@ -138,11 +139,32 @@ $(async function() {
 
     }
     
-
   })
 
-/*  EVENT LISTENERS ABOVE   */
-/*  GENERAL FUNCTIONS BELOW */
+  $showFavorites.on("click", function(evt){
+    evt.preventDefault();
+   
+    // Store button to a var for reuse:
+    let $favButton = $(this).children(":first");
+    
+    // Need to toggle button (show favorites/show all)
+    if ($favButton.text() === "Show Favorites") {
+      // User clicked button and it was "Show Favorites" so toggle button to "Show All"
+      $favButton.text("Show All");
+
+      // Then hide all of the non-favorites:
+      $('.far').parent().hide();
+    }
+    else {
+      // User must have clicked button when it was "show all" to change button to "show favs"
+      $favButton.text("Show Favorites");
+
+      // then show all stories:
+      $('.far').parent().show();
+    }
+
+  });
+
 
 
   /**
@@ -258,6 +280,9 @@ $(async function() {
     
     // Only show the add new story button if logged in:
     $addNewStory.show();
+
+    // Only show the favorites button if we're logged in:
+    $showFavorites.show();
     
     // Only show the likable hearts if logged in:
     $(".fa-heart").show();
