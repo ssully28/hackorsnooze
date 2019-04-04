@@ -8,6 +8,7 @@ $(async function() {
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
+  const $addNewStory = $("#addNewStory");
 
   // global storyList variable
   let storyList = null;
@@ -82,6 +83,13 @@ $(async function() {
     hideElements();
     await generateStories();
     $allStoriesList.show();
+  });
+
+  /**
+   * Event handler for add new story button
+   */
+  $addNewStory.on("click", function(){
+    $submitForm.toggle();
   });
 
   /**
@@ -177,8 +185,12 @@ $(async function() {
   }
 
   function showNavForLoggedInUser() {
+    console.log("in showNavForLoggedInUser!");
     $navLogin.hide();
     $navLogOut.show();
+    
+    $addNewStory.show();
+    
   }
 
   // simple function to pull the hostname from a URL
