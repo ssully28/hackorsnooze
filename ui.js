@@ -114,6 +114,35 @@ $(async function() {
     $submitForm.toggle();
   });
 
+  $allStoriesList.on("click", ".fa-heart", function(evt){
+    evt.preventDefault();
+
+    // Check to see if we're liking or unliking a story:
+    if($(this).hasClass('fas')){
+
+      // Toggle the heart light or dark
+      $(this).removeClass('fas').addClass('far');
+
+      
+    }
+    else {
+      
+      // Toggle the heart light or dark
+      $(this).removeClass('far').addClass('fas');
+
+
+      // API CALL - Add Favorite to user:
+      currentUser.addFavoriteToUser($(this).parent().attr("id"));
+
+    }
+    
+
+  })
+
+/*  EVENT LISTENERS ABOVE   */
+/*  GENERAL FUNCTIONS BELOW */
+
+
   /**
    * On page load, checks local storage to see if the user is already logged in.
    * Renders page information accordingly.
@@ -121,7 +150,7 @@ $(async function() {
   async function checkIfLoggedIn() {
     // let's see if we're logged in
     const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
+    const username = localStorage.getItem("username");  
 
     // if there is a token in localStorage, call User.getLoggedInUser
     //  to get an instance of User with the right details
@@ -151,6 +180,9 @@ $(async function() {
 
     // update the navigation bar
     showNavForLoggedInUser();
+
+    // Once we log in re-fresh page so our wonderful favorites show up!
+    document.location.reload();
   }
 
   /**
@@ -178,9 +210,20 @@ $(async function() {
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
 
+    
+    // Set a default heart class (non-favorite)
+    let heartClass = "far";
+
+    // If we have current user - then check if it hasFavorited this story:
+    if (currentUser){
+      heartClass = currentUser.hasFavorited(story.storyId) ? "fas" : "far";
+    }
+    
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
+        
+        <i class="hidden ${heartClass} fa-heart"></i>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -207,11 +250,15 @@ $(async function() {
   }
 
   function showNavForLoggedInUser() {
-    console.log("in showNavForLoggedInUser!");
+
     $navLogin.hide();
     $navLogOut.show();
     
+    // Only show the add new story button if logged in:
     $addNewStory.show();
+    
+    // Only show the likable hearts if logged in:
+    $(".fa-heart").show();
     
   }
 

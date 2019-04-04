@@ -70,6 +70,24 @@ class User {
     this.ownStories = [];
   }
 
+  async addFavoriteToUser(storyId){
+
+    // Need the token:
+    let payload = 
+    {
+      token: this.loginToken
+    };
+
+    // Then just pass the story id in with the url and the payload (just token in this case):
+    const response = await $.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, payload);
+    
+  }
+
+  // Returns True if the story is favorited by the user else false:
+  hasFavorited(storyId){
+    return this.favorites.some(obj => obj.storyId === storyId);
+  }
+
   /*
    A class method to create a new user - it accepts a username, password and name
    It makes a POST request to the API and returns the newly created User as well as a token
@@ -105,7 +123,7 @@ class User {
     const existingUser = new User(response.user);
 
     // instantiate Story instances for the user's favorites and ownStories
-    existingUser.favorites = response.user.favorites.map(story => new Story(story))
+    existingUser.favorites = response.user.favorites.map(story => new Story(story));
     existingUser.ownStories = response.user.stories.map(story => new Story(story));
 
     // attach the token to the newUser instance for convenience
@@ -142,6 +160,9 @@ class User {
     return existingUser;
   }
 }
+
+
+
 /**
  * Class to represent a single story. Has one method to update.
  */
