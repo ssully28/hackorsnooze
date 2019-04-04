@@ -86,20 +86,10 @@ $(async function() {
   });
 
   /**
-   * 
+   * Event handler for submit form to add new stories
    */
   $submitForm.on("submit", async function(evt){
     evt.preventDefault();
-
-    // this.author = storyObj.author;
-    // this.title = storyObj.title;
-    // this.url = storyObj.url;
-    // this.username = storyObj.username;
-    // this.storyId = storyObj.storyId;
-    // this.createdAt = storyObj.createdAt;
-    // this.updatedAt = storyObj.updatedAt;
-
-    // alert("Username: " + currentUser.username)
 
     let newStoryObj = {
       author : $("#author").val(),
@@ -107,10 +97,17 @@ $(async function() {
       url : $("#url").val(),
     }
 
+    // Perform the post and away for the returned story
     let response = await storyList.addStory(currentUser, newStoryObj);
-    console.log("FROM UI: ", response);
-    //let htmlResponse = generateStoryHTML(response);
-    
+
+    // Create a Story object from the returned story
+    let returnStory = new Story(response.story);
+
+    // HTML'ify the return story object
+    let htmlResponse = generateStoryHTML(returnStory);
+
+    // Prepend to the story list:
+    $allStoriesList.prepend(htmlResponse);
   });
 
   /**
