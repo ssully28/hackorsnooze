@@ -35,6 +35,28 @@ class StoryList {
   async addStory(user, newStory) {
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in the script.js file where it will be appended to the DOM
+
+
+    // {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNhbmR3aWNoIiwiaWF0IjoxNTU0Mzk3NTczfQ.5aMBBIR-m2kxODIIMJKjRZLzoO15nO0lws-JJq-6JvE",
+    //  "story":{"author":"Sandwich Club","title":"The Lost Pickle", "url":"https://www.momentmag.com/lost-magic-wooden-pickle-barrel/"}}
+
+
+
+    let payload = 
+    {
+      token:`${user.loginToken}`,
+      story:
+      {
+        author:`${newStory.author}`,
+        title:`${newStory.title}`, 
+        url:`${newStory.url}`
+      }
+    };
+    console.log("PAYLOAD: ->",payload,"<-");
+    const response = await $.post(`${BASE_URL}/stories`, payload, ()=> {
+      console.log("NewStory Posted!");
+    });
+    return response
   }
 }
 

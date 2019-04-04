@@ -86,7 +86,35 @@ $(async function() {
   });
 
   /**
-   * Event handler for add new story button
+   * 
+   */
+  $submitForm.on("submit", async function(evt){
+    evt.preventDefault();
+
+    // this.author = storyObj.author;
+    // this.title = storyObj.title;
+    // this.url = storyObj.url;
+    // this.username = storyObj.username;
+    // this.storyId = storyObj.storyId;
+    // this.createdAt = storyObj.createdAt;
+    // this.updatedAt = storyObj.updatedAt;
+
+    // alert("Username: " + currentUser.username)
+
+    let newStoryObj = {
+      author : $("#author").val(),
+      title : $("#title").val(),
+      url : $("#url").val(),
+    }
+
+    let response = await storyList.addStory(currentUser, newStoryObj);
+    console.log("FROM UI: ", response);
+    //let htmlResponse = generateStoryHTML(response);
+    
+  });
+
+  /**
+   * Event handler for add new story button (Shows new story form!)
    */
   $addNewStory.on("click", function(){
     $submitForm.toggle();
