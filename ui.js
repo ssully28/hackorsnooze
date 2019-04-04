@@ -123,6 +123,8 @@ $(async function() {
       // Toggle the heart light or dark
       $(this).removeClass('fas').addClass('far');
 
+      // API CALL - Remove Favorite from user:
+      currentUser.removeFavoriteToUser($(this).parent().attr("id"));
       
     }
     else {

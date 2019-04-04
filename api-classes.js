@@ -83,6 +83,28 @@ class User {
     
   }
 
+  async removeFavoriteToUser(storyId){
+
+    // Need the token:
+    let payload = 
+    {
+      token: this.loginToken
+    };
+
+    // "DELETE" requires us to use 'ajax' (and we need to add the payload here in data)
+    let ajaxSettings = {
+      type: 'DELETE',
+      data: payload
+    }
+
+    // Then just pass the story id in with the url and the ajax settings:
+    const response = await $.ajax(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, ajaxSettings);
+    
+  }
+
+
+
+
   // Returns True if the story is favorited by the user else false:
   hasFavorited(storyId){
     return this.favorites.some(obj => obj.storyId === storyId);
