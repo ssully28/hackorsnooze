@@ -70,6 +70,12 @@ class User {
     this.ownStories = [];
   }
 
+
+
+  // TODO:  Refactor:  
+  //    Manage favorites - will need to do this in ui.js too....need to display the favs from the favs array....NOT just hide the 
+  //    recent "25" storries
+  //    Return values - not really necessary, but good practice in this case.    
   async addFavoriteToUser(storyId){
 
     // Need the token:

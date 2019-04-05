@@ -1,4 +1,4 @@
-$(async function() {
+$(async function () {
   // cache some selectors we'll be using quite a bit
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
@@ -23,7 +23,7 @@ $(async function() {
    * Event listener for logging in.
    *  If successfully we will setup the user instance
    */
-  $loginForm.on("submit", async function(evt) {
+  $loginForm.on("submit", async function (evt) {
     evt.preventDefault(); // no page-refresh on submit
 
     // grab the username and password
@@ -42,7 +42,7 @@ $(async function() {
    * Event listener for signing up.
    *  If successfully we will setup a new user instance
    */
-  $createAccountForm.on("submit", async function(evt) {
+  $createAccountForm.on("submit", async function (evt) {
     evt.preventDefault(); // no page refresh
 
     // grab the required fields
@@ -60,7 +60,7 @@ $(async function() {
   /**
    * Log Out Functionality
    */
-  $navLogOut.on("click", function() {
+  $navLogOut.on("click", function () {
     // empty out local storage
     localStorage.clear();
     // refresh the page, clearing memory
@@ -70,7 +70,7 @@ $(async function() {
   /**
    * Event Handler for Clicking Login
    */
-  $navLogin.on("click", function() {
+  $navLogin.on("click", function () {
     // Show the Login and Create Account Forms
     $loginForm.slideToggle();
     $createAccountForm.slideToggle();
@@ -80,16 +80,19 @@ $(async function() {
   /**
    * Event handler for Navigation to Homepage
    */
-  $("body").on("click", "#nav-all", async function() {
+  $("body").on("click", "#nav-all", async function () {
     hideElements();
     await generateStories();
+    if (currentUser){
+      showNavForLoggedInUser();
+    }
     $allStoriesList.show();
   });
 
   /**
    * Event handler for submit form to add new stories
    */
-  $submitForm.on("submit", async function(evt){
+  $submitForm.on("submit", async function (evt) {
     evt.preventDefault();
 
     let newStoryObj = {
@@ -111,42 +114,40 @@ $(async function() {
   /**
    * Event handler for add new story button (Shows new story form!)
    */
-  $addNewStory.on("click", function(){
+  $addNewStory.on("click", function () {
     $submitForm.toggle();
   });
 
-  $allStoriesList.on("click", ".fa-heart", function(evt){
+  $allStoriesList.on("click", ".fa-heart", async function (evt) {
     evt.preventDefault();
 
+    // Need to refactor 
     // Check to see if we're liking or unliking a story:
-    if($(this).hasClass('fas')){
+    if ($(this).hasClass('fas')) {
 
+      // API CALL - Remove Favorite from user:
+      await currentUser.removeFavoriteToUser($(this).parent().attr("id"));
       // Toggle the heart light or dark
       $(this).removeClass('fas').addClass('far');
 
-      // API CALL - Remove Favorite from user:
-      currentUser.removeFavoriteToUser($(this).parent().attr("id"));
-      
     }
     else {
-      
+
+      // API CALL - Add Favorite to user:
+      await currentUser.addFavoriteToUser($(this).parent().attr("id"));
       // Toggle the heart light or dark
       $(this).removeClass('far').addClass('fas');
 
-
-      // API CALL - Add Favorite to user:
-      currentUser.addFavoriteToUser($(this).parent().attr("id"));
-
     }
-    
+
   })
 
-  $showFavorites.on("click", function(evt){
+  $showFavorites.on("click", function (evt) {
     evt.preventDefault();
-   
+
     // Store button to a var for reuse:
     let $favButton = $(this).children(":first");
-    
+
     // Need to toggle button (show favorites/show all)
     if ($favButton.text() === "Show Favorites") {
       // User clicked button and it was "Show Favorites" so toggle button to "Show All"
@@ -174,7 +175,7 @@ $(async function() {
   async function checkIfLoggedIn() {
     // let's see if we're logged in
     const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");  
+    const username = localStorage.getItem("username");
 
     // if there is a token in localStorage, call User.getLoggedInUser
     //  to get an instance of User with the right details
@@ -234,15 +235,15 @@ $(async function() {
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
 
-    
+
     // Set a default heart class (non-favorite)
     let heartClass = "far";
 
     // If we have current user - then check if it hasFavorited this story:
-    if (currentUser){
+    if (currentUser) {
       heartClass = currentUser.hasFavorited(story.storyId) ? "fas" : "far";
     }
-    
+
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
@@ -277,16 +278,16 @@ $(async function() {
 
     $navLogin.hide();
     $navLogOut.show();
-    
+
     // Only show the add new story button if logged in:
     $addNewStory.show();
 
     // Only show the favorites button if we're logged in:
     $showFavorites.show();
-    
+
     // Only show the likable hearts if logged in:
     $(".fa-heart").show();
-    
+
   }
 
   // simple function to pull the hostname from a URL
