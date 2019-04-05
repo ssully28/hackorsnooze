@@ -32,13 +32,21 @@ a:hover {
 
 nav {
   display: flex;
-  justify-content: space-around;
-  background-color: #ff6600;
+  justify-content: space-between;
+  background-color: #6c9be2;
   align-items: center;
   padding: 5px 20px;
-  border-radius: 3px 3px 0 0;
+  border-radius: 5px 5px 0 0;
 }
 
+.fa-satellite-dish {
+  font-size: 25px;
+  color: black;
+}
+#nav-all {
+  font-size: 30px;
+  font-family: 'ZCOOL XiaoWei', serif;
+}
 .main-nav-links {
   margin: 0 15px;
 }
@@ -56,7 +64,7 @@ nav {
   display: flex;
   flex-direction: column;
   align-self: center;
-  background-color: #f6f6ef;
+  background-color: #e9ecf3;
 }
 
 form {
@@ -157,7 +165,7 @@ form > hr {
 
 .article-link > strong {
   color: black;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: normal;
   margin: 18px 0;
 }
@@ -171,14 +179,15 @@ form > hr {
 }
 
 .article-author {
+  font-size: .85rem;
   margin-top: 5px;
-  margin-left: 25px;
+  margin-left: 10px;
 }
 
 .article-username {
   display: block;
-  margin-top: 5px;
-  margin-left: 25px;
+  margin-top: 3px;
+  margin-left: 15px;
 }
 
 #favorited-articles,
@@ -220,4 +229,12 @@ form > hr {
     max-width: 900px;
     margin: 8px auto;
   }
+}
+
+.fa-heart {
+  color: red;
+}
+
+.fa-trash-alt {
+  color: red;
 }

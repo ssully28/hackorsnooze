@@ -153,6 +153,15 @@ $(async function () {
       generateOwnStories(); // Rerendering own stories
   })
 
+  /**
+   * Event Handler for Show Favorites Button
+   * 
+   * TODO:  Refactor so when clicking "show favorites", if we're looking
+   *        at "show own stories", that button gets reset to "show own stories"
+   *        (currently it would continue to show "show all")
+   * 
+   *        vice-versa for show own stories!
+   */
   $showFavorites.on("click", async function (evt) {
     evt.preventDefault();
 
