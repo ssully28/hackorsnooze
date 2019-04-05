@@ -87,6 +87,11 @@ class User {
     // Then just pass the story id in with the url and the payload (just token in this case):
     const response = await $.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, payload);
     
+    // Reassigning favorites with newly updated favorites list
+    this.favorites = response.user.favorites;
+    
+    return this.favorites;
+    
   }
 
   async removeFavoriteToUser(storyId){
@@ -106,6 +111,10 @@ class User {
     // Then just pass the story id in with the url and the ajax settings:
     const response = await $.ajax(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, ajaxSettings);
     
+    // Reassigning favorites with newly updated favorites list
+    this.favorites = response.user.favorites;
+    
+    return this.favorites;
   }
 
 

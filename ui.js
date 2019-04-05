@@ -13,6 +13,7 @@ $(async function () {
 
   // global storyList variable
   let storyList = null;
+  let favoritesList = null;
 
   // global currentUser variable
   let currentUser = null;
@@ -125,16 +126,16 @@ $(async function () {
     // Check to see if we're liking or unliking a story:
     if ($(this).hasClass('fas')) {
 
-      // API CALL - Remove Favorite from user:
-      await currentUser.removeFavoriteToUser($(this).parent().attr("id"));
+      // API CALL - Remove Favorite from user  & update our global
+      currentUser.favorites = await currentUser.removeFavoriteToUser($(this).parent().attr("id"));
       // Toggle the heart light or dark
       $(this).removeClass('fas').addClass('far');
 
     }
     else {
 
-      // API CALL - Add Favorite to user:
-      await currentUser.addFavoriteToUser($(this).parent().attr("id"));
+      // API CALL - Add Favorite to user & update our global
+      currentUser.favorites = await currentUser.addFavoriteToUser($(this).parent().attr("id"));
       // Toggle the heart light or dark
       $(this).removeClass('far').addClass('fas');
 
@@ -142,7 +143,7 @@ $(async function () {
 
   })
 
-  $showFavorites.on("click", function (evt) {
+  $showFavorites.on("click", async function (evt) {
     evt.preventDefault();
 
     // Store button to a var for reuse:
@@ -154,14 +155,27 @@ $(async function () {
       $favButton.text("Show All");
 
       // Then hide all of the non-favorites:
-      $('.far').parent().hide();
+      // $('.far').parent().hide();
+      // 1) Empty the storyList div
+      // 2) show all the favorites
+      $allStoriesList.empty();
+      generateFavorites();
+      $(".fa-heart").show();
+
     }
     else {
       // User must have clicked button when it was "show all" to change button to "show favs"
       $favButton.text("Show Favorites");
 
       // then show all stories:
-      $('.far').parent().show();
+      // $('.far').parent().show();
+      // 1) Empty the favorites
+      // 2) Show the storyList div
+      $allStoriesList.empty();
+      await generateStories();
+      $(".fa-heart").show();
+
+
     }
 
   });
@@ -228,7 +242,19 @@ $(async function () {
       $allStoriesList.append(result);
     }
   }
+  
+  function generateFavorites() {
 
+    // empty out that part of the page
+    $allStoriesList.empty();
+
+    // loop through all of our stories and generate HTML for them
+    console.log("FAVORITES LIST", currentUser.favorites);
+    for (let story of currentUser.favorites.reverse()) { // Reverses to newest first, to oldest LIFO
+      const result = generateStoryHTML(story);
+      $allStoriesList.append(result);
+    }
+  }
   /**
    * A function to render HTML for an individual Story instance
    */
