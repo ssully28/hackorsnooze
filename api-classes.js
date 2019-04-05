@@ -26,6 +26,23 @@ class StoryList {
     const storyList = new StoryList(stories)
     return storyList;
   }
+
+  /**
+   * getMoreStories
+   * Pretty much same as getStories but passes a parameter to skip X number
+   * of stories to enable infinite-scroll
+   * @param {*} numToSkip 
+   */
+  static async getMoreStories(numToSkip) {
+    const response = await $.getJSON(`${BASE_URL}/stories?skip=${numToSkip}`);
+
+    const stories = response.stories.map(story => new Story(story));
+
+    const storyList = new StoryList(stories);
+    return storyList;
+
+  }
+
   /**
      * Method to make a POST request to /stories and add the new story to the list
      The function should accept the current instance of User who will post the story

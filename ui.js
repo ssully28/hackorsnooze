@@ -13,6 +13,8 @@ $(async function () {
   const $showFavorites = $('#showFavorites');
   const $showOwnStories = $('#showOwnStories');
 
+  let scrollCounter = 0; // Used to track our scroll counter to grab x (in our case 25) stories at a time
+
   // global storyList variable
   let storyList = null;
   let favoritesList = null;
@@ -224,7 +226,42 @@ $(async function () {
 
   });
 
-  
+  /**
+   * Event Listener on window to implement infinite-scroll
+   * Checks document height against window hight to detect
+   * bottom, then does an ajax call to grab the next 25
+   * stories and appends those to the 'allStoriesList'
+   */
+  $(document).ready(function(){
+    let win = $(window);
+
+    win.scroll(async function(){
+      if ($(document).height() - win.height() == win.scrollTop()) 
+      {
+        // User scrolled to the bottom of the screen, now we'll 
+        // want to do an api call and get more stories and append
+        // them to the story list:
+
+
+        // Increase the scroll counter by 25 so we don't keep grabbing
+        // the same articles over and over and over!
+        scrollCounter += 25;
+
+        
+        // API call to grab next 25:
+        let nextStoryList = await StoryList.getMoreStories(scrollCounter);
+        //let nextStoryListHTML = generateStoryHTML(nextStoryList);
+
+
+        // loop through all of our stories and generate HTML for them and append:
+        for (let story of nextStoryList.stories) {
+          const result = generateStoryHTML(story);
+          $allStoriesList.append(result);
+        }
+
+      }
+    })
+  });
   
   
   /**
