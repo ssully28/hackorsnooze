@@ -72,10 +72,11 @@ class User {
 
 
 
-  // TODO:  Refactor:  
-  //    Manage favorites - will need to do this in ui.js too....need to display the favs from the favs array....NOT just hide the 
-  //    recent "25" storries
-  //    Return values - not really necessary, but good practice in this case.    
+  /**
+   * This adds a favorite story to the user class and returns the newly updated favorite list
+   * @param {*} storyId A string that specifies the id of the story
+   */
+
   async addFavoriteToUser(storyId){
 
     // Need the token:
@@ -94,6 +95,10 @@ class User {
     
   }
 
+   /**
+   * This removes a favorite story to the user class and returns the newly updated favorite list
+   * @param {*} storyId A string that specifies the id of the story
+   */
   async removeFavoriteToUser(storyId){
 
     // Need the token:
@@ -117,12 +122,29 @@ class User {
     return this.favorites;
   }
 
-
-
-
   // Returns True if the story is favorited by the user else false:
   hasFavorited(storyId){
     return this.favorites.some(obj => obj.storyId === storyId);
+  }
+
+  /** Deletes a story with the API and returns nothing*/
+  async deleteStory(storyId) {
+    let payload = 
+    {
+      token: this.loginToken
+    };
+
+    // "DELETE" requires us to use 'ajax' (and we need to add the payload here in data)
+    let ajaxSettings = {
+      type: 'DELETE',
+      data: payload
+    }
+
+    // Then just pass the story id in with the url and the ajax settings:
+    const response = await $.ajax(`${BASE_URL}/stories/${storyId}`, ajaxSettings);
+
+    // Filter out the removed storyId
+    this.ownStories = this.ownStories.filter( (story) => story.storyId !== storyId);
   }
 
   /*

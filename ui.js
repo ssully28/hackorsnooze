@@ -8,8 +8,10 @@ $(async function () {
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
+  const $userButtons = $("#user-buttons"); // For show/hiding all the logged in user buttons
   const $addNewStory = $("#addNewStory");
   const $showFavorites = $('#showFavorites');
+  const $showOwnStories = $('#showOwnStories');
 
   // global storyList variable
   let storyList = null;
@@ -119,6 +121,7 @@ $(async function () {
     $submitForm.toggle();
   });
 
+  /* Favorites Event Delegation */
   $allStoriesList.on("click", ".fa-heart", async function (evt) {
     evt.preventDefault();
 
@@ -143,6 +146,15 @@ $(async function () {
 
   })
 
+  /* Deletion event delegation */
+  $allStoriesList.on("click", ".fa-trash-alt", async function () {
+      
+      let storyId = $(this).parent().attr("id");
+
+      await currentUser.deleteStory(storyId); // Making an API call
+      generateOwnStories(); // Rerendering own stories
+  })
+
   $showFavorites.on("click", async function (evt) {
     evt.preventDefault();
 
@@ -154,34 +166,60 @@ $(async function () {
       // User clicked button and it was "Show Favorites" so toggle button to "Show All"
       $favButton.text("Show All");
 
-      // Then hide all of the non-favorites:
-      // $('.far').parent().hide();
       // 1) Empty the storyList div
       // 2) show all the favorites
       $allStoriesList.empty();
       generateFavorites();
-      $(".fa-heart").show();
+      $(".fa-heart").show(); // Show the hearts because we're logged in
 
     }
     else {
       // User must have clicked button when it was "show all" to change button to "show favs"
       $favButton.text("Show Favorites");
 
-      // then show all stories:
-      // $('.far').parent().show();
       // 1) Empty the favorites
       // 2) Show the storyList div
       $allStoriesList.empty();
       await generateStories();
-      $(".fa-heart").show();
-
-
+      $(".fa-heart").show(); // Show the hearts because we're logged in
     }
 
   });
 
+  $showOwnStories.on("click", async function (evt) {
+    evt.preventDefault();
 
+    // Store button to a var for reuse:
+    let $ownStoriesButton = $(this).children(":first");
 
+    // Need to toggle button (show favorites/show all)
+    if ($ownStoriesButton.text() === "Show Own Stories") {
+      // User clicked button and it was "Show Favorites" so toggle button to "Show All"
+      $ownStoriesButton.text("Show All");
+
+      // 1) Empty the storyList div
+      // 2) show all the favorites
+      $allStoriesList.empty();
+      generateOwnStories();
+      $(".fa-heart").show(); // Show the hearts because we're logged in
+
+    }
+    else {
+      // User must have clicked button when it was "show all" to change button to "show favs"
+      $ownStoriesButton.text("Show Own Stories");
+
+      // 1) Empty the favorites
+      // 2) Show the storyList div
+      $allStoriesList.empty();
+      await generateStories();
+      $(".fa-heart").show(); // Show the hearts because we're logged in
+    }
+
+  });
+
+  
+  
+  
   /**
    * On page load, checks local storage to see if the user is already logged in.
    * Renders page information accordingly.
@@ -190,18 +228,18 @@ $(async function () {
     // let's see if we're logged in
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-
+    
     // if there is a token in localStorage, call User.getLoggedInUser
     //  to get an instance of User with the right details
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
-
+    
     if (currentUser) {
       showNavForLoggedInUser();
     }
   }
-
+  
   /**
    * A rendering function to run to reset the forms and hide the login info
    */
@@ -209,21 +247,21 @@ $(async function () {
     // hide the forms for logging in and signing up
     $loginForm.hide();
     $createAccountForm.hide();
-
+    
     // reset those forms
     $loginForm.trigger("reset");
     $createAccountForm.trigger("reset");
-
+    
     // show the stories
     $allStoriesList.show();
-
+    
     // update the navigation bar
     showNavForLoggedInUser();
-
+    
     // Once we log in re-fresh page so our wonderful favorites show up!
     document.location.reload();
   }
-
+  
   /**
    * A rendering function to call the StoryList.getStories static method,
    *  which will generate a storyListInstance. Then render it.
@@ -235,7 +273,7 @@ $(async function () {
     storyList = storyListInstance;
     // empty out that part of the page
     $allStoriesList.empty();
-
+    
     // loop through all of our stories and generate HTML for them
     for (let story of storyList.stories) {
       const result = generateStoryHTML(story);
@@ -244,21 +282,35 @@ $(async function () {
   }
   
   function generateFavorites() {
-
+    
     // empty out that part of the page
     $allStoriesList.empty();
-
+    
     // loop through all of our stories and generate HTML for them
-    console.log("FAVORITES LIST", currentUser.favorites);
     for (let story of currentUser.favorites.reverse()) { // Reverses to newest first, to oldest LIFO
       const result = generateStoryHTML(story);
       $allStoriesList.append(result);
     }
   }
   /**
-   * A function to render HTML for an individual Story instance
+   * Pull the own stories from the current User and displays them.
    */
-  function generateStoryHTML(story) {
+  function generateOwnStories() {
+     // empty out that part of the page
+     $allStoriesList.empty();
+    
+     // loop through all of our stories and generate HTML for them
+     for (let story of currentUser.ownStories.reverse()) { // Reverses to newest first, to oldest LIFO
+       const result = generateStoryHTML(story, "ownersView"); // owner's view is a parameter flag
+       $allStoriesList.append(result);
+     }
+
+  }
+  /**
+   * A function to render HTML for an individual Story instance.
+   * option is optional flag which can be "ownersView"
+   */
+  function generateStoryHTML(story, option) {
     let hostName = getHostName(story.url);
 
 
@@ -268,6 +320,11 @@ $(async function () {
     // If we have current user - then check if it hasFavorited this story:
     if (currentUser) {
       heartClass = currentUser.hasFavorited(story.storyId) ? "fas" : "far";
+    }
+
+    let trashHTML = "";
+    if (option == "ownersView") {
+      trashHTML = '<i class="fas fa-trash-alt"></i>';
     }
 
     // render story markup
@@ -280,6 +337,7 @@ $(async function () {
         </a>
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
+        ${trashHTML}
         <small class="article-username">posted by ${story.username}</small>
       </li>
     `);
@@ -305,11 +363,13 @@ $(async function () {
     $navLogin.hide();
     $navLogOut.show();
 
-    // Only show the add new story button if logged in:
-    $addNewStory.show();
 
-    // Only show the favorites button if we're logged in:
-    $showFavorites.show();
+    $userButtons.show();
+    // // Only show the add new story button if logged in:
+    // $addNewStory.show();
+
+    // // Only show the favorites button if we're logged in:
+    // $showFavorites.show();
 
     // Only show the likable hearts if logged in:
     $(".fa-heart").show();
