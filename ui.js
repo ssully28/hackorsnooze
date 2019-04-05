@@ -125,8 +125,6 @@ $(async function () {
   $allStoriesList.on("click", ".fa-heart", async function (evt) {
     evt.preventDefault();
 
-    // Need to refactor 
-    // Check to see if we're liking or unliking a story:
     if ($(this).hasClass('fas')) {
 
       // API CALL - Remove Favorite from user  & update our global
@@ -323,7 +321,7 @@ $(async function () {
     }
 
     let trashHTML = "";
-    if (option == "ownersView") {
+    if (option === "ownersView") { // find the owner through the story.owner or something Note
       trashHTML = '<i class="fas fa-trash-alt"></i>';
     }
 

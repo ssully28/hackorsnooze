@@ -129,8 +129,7 @@ class User {
 
   /** Deletes a story with the API and returns nothing*/
   async deleteStory(storyId) {
-    let payload = 
-    {
+    let payload = {
       token: this.loginToken
     };
 
@@ -141,7 +140,7 @@ class User {
     }
 
     // Then just pass the story id in with the url and the ajax settings:
-    const response = await $.ajax(`${BASE_URL}/stories/${storyId}`, ajaxSettings);
+    await $.ajax(`${BASE_URL}/stories/${storyId}`, ajaxSettings);
 
     // Filter out the removed storyId
     this.ownStories = this.ownStories.filter( (story) => story.storyId !== storyId);
